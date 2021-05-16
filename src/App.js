@@ -1,18 +1,34 @@
-import React, { Component } from 'react'
-import LoginButton from './Components/Login'
-import LogoutButton from './Components/Logout'
-import User from './Components/User'
+import React from 'react';
+import Header from './Header';
+import IsLoadingAndError from './IsLoadingAndError';
+import Footer from './Footer';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom";
 
-export class App extends Component {
+class App extends React.Component {
+
   render() {
-    return (
-      <div>
-        <LoginButton />
-        <LogoutButton />
-        <User />
-      </div>
+    console.log('app', this.props)
+    return(
+      <>
+        <Router>
+          <IsLoadingAndError>
+            <Header />
+              <Switch>
+                <Route exact path="/">
+                  {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
+                </Route>
+                {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
+              </Switch>
+            <Footer />
+          </IsLoadingAndError>
+        </Router>
+      </>
     )
   }
 }
 
-export default App
+export default App;
