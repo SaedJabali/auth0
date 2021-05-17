@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './Components/login'
 import { withAuth0 } from "@auth0/auth0-react";
 import User from './Components/User'
-import axios from 'axios';
+// import axios from 'axios';
 import {
   BrowserRouter as Router,
   Switch,
