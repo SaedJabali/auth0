@@ -15,31 +15,31 @@ import {
 import MyFavoriteBooks from './Components/myFavoriteBooks';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      books: [],
-      Email: '',
-      showBooks: false,
-    }
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     books: [],
+  //     Email: '',
+  //     showBooks: false,
+  //   }
+  // }
 
-  getBooks = async (event) => {
-    event.preventDefault();
-    try {
+  // getBooks = async (event) => {
+  //   event.preventDefault();
+  //   try {
 
-      let books = await axios.get(`http://localhost:3001/books`);
-      this.setState({
-        books: books.data,
-        Email: '',
-        showBooks: true
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     let books = await axios.get(`http://localhost:3001/books`);
+  //     this.setState({
+  //       books: books.data,
+  //       Email: '',
+  //       showBooks: true
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   render() {
-    const { isAuthenticated } = this.props.auth0;
+    const { isAuthenticated,user } = this.props.auth0;
     console.log('app', this.props)
     return (
       <>
@@ -51,7 +51,7 @@ class App extends React.Component {
                 {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
 
                 {(isAuthenticated) ?
-                  <MyFavoriteBooks 
+                  <MyFavoriteBooks user={user} 
                   
                   />
 
