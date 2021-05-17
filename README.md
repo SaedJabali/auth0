@@ -74,12 +74,12 @@ be at the exact same place in understanding and skill level?
 
 we will try hard to cover each other weaknesses.
 
-Name of feature: ________________________________
+Name of feature: Add auth to our app
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 40 minutes
 
-Start time: _____
+Start time: 2 pm
 
-Finish time: _____
+Finish time: 3:00 pm
 
-Actual time needed to complete: _____
+Actual time needed to complete: 60 minutes

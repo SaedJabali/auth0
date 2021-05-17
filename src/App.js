@@ -15,12 +15,11 @@ import MyFavoriteBooks from './Components/myFavoriteBooks';
 
 class App extends React.Component {
   render() {
-    const { user, isAuthenticated } = this.props.auth0;
+    const {isAuthenticated } = this.props.auth0;
     console.log('app', this.props)
     return (
       <>
         <Router>
-          <Login />
           <IsLoadingAndError>
             <Header />
             <Switch>
@@ -29,14 +28,19 @@ class App extends React.Component {
 
                 {(isAuthenticated) ?
                   <MyFavoriteBooks />
-                  : null}
+
+                  : <Login />}
 
               </Route>
               {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
-              {(isAuthenticated)?
-              <User
-                user={user} />
-                :null}
+              <Route
+                exact path='/profile'
+              >
+                <User />
+              </Route>
+
+              {/* <Route exact path='/profile' component={User} /> */}
+
             </Switch>
             <Footer />
           </IsLoadingAndError>
