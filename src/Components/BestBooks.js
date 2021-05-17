@@ -1,9 +1,6 @@
 import React from 'react';
-
 import axios from 'axios';
-
 import { withAuth0 } from '@auth0/auth0-react';
-
 import Container from 'react-bootstrap/Container';
 import Carousel from 'react-bootstrap/Carousel';
 
@@ -11,10 +8,8 @@ import Carousel from 'react-bootstrap/Carousel';
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      books: [],
-     
+      booksData: [],
     };
   }
 
@@ -22,15 +17,16 @@ class BestBooks extends React.Component {
     const { user } = this.props.auth0;
     console.log(user);
     console.log('about to request book data');
-try{
-    const books = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/books`);
-    console.log('book data exists!', books.data.favoriteBooks);
+    try{
+  const booksData = await axios.get(`http://localhost:3001/books`);
+    console.log('book data exists!', booksData.data.favoriteBooks);
 
     this.setState({
-      books: books.data.favoriteBooks
+      books: booksData.data.favoriteBooks
       });
   }catch(err){
-    this.setState({error: `${err.message}: ${err.response.data.error}`});
+    // this.setState({error: `${err.message}: ${err.response.data.error}`});
+  console.log('epdhkv;soflidgkh');
   }
 }
 
