@@ -9,7 +9,7 @@ class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      booksData: [],
+      userBooks: [],
     };
   }
 
@@ -17,39 +17,37 @@ class BestBooks extends React.Component {
     const { user } = this.props.auth0;
     console.log(user);
     console.log('about to request book data');
-    try{
-  const booksData = await axios.get(`http://localhost:3001/books`);
-    console.log('book data exists!', booksData.data.favoriteBooks);
+    try {
+      const booksData = await axios.get(`http://localhost:3001/books?email=${user.email}`);
+      console.log('book data exists!', booksData);
 
-    this.setState({
-      books: booksData.data.favoriteBooks
+      this.setState({
+        userBooks: booksData.data.books
       });
-  }catch(err){
-    // this.setState({error: `${err.message}: ${err.response.data.error}`});
-  console.log('epdhkv;soflidgkh');
+    } catch (err) {
+      // this.setState({error: `${err.message}: ${err.response.data.error}`});
+      console.log('epdhkv;soflidgkh');
+    }
   }
-}
 
 
 
 
   render() {
-    console.log(this.state.bookData);
+    console.log(`hiiiiiiii, ${this.state.userBooks}`);
     return (
       <>
-        <Container>
-          <Carousel>
-            {this.state.bookData && this.state.bookData.map(book =>
+        <Container style={{ width: '70%' }}>
+          <Carousel style={{ width: '30%' }}>
+            {this.state.userBooks && this.state.userBooks.map(book =>
               <Carousel.Item>
                 <img
                   className="d-block w-100"
                   src={book.image}
                   alt={`slide`}
                 />
-                <Carousel.Caption>
                 <h3>{book.name}</h3>
-                  <p>{book.description}</p>
-                </Carousel.Caption>
+                <p>{book.description}</p>
               </Carousel.Item>
             )}
           </Carousel>
