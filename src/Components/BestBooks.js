@@ -1,60 +1,75 @@
 import React from 'react';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
-import Container from 'react-bootstrap/Container';
 import Carousel from 'react-bootstrap/Carousel';
+import Button from 'react-bootstrap/Button';
+import BookFormModal from './BestBookModal';
 
-
-class BestBooks extends React.Component {
+class BestBook extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = {
-      userBooks: [],
+    super(props)
+    this.state = { 
+      bookData: [],
+      modalSeen: false,
     };
   }
 
-  componentDidMount = async () => {
-    const { user } = this.props.auth0;
-    console.log(user);
-    console.log('about to request book data');
-    try {
-      const booksData = await axios.get(`http://localhost:3001/books?email=${user.email}`);
-      console.log('book data exists!', booksData);
-
-      this.setState({
-        userBooks: booksData.data.books
-      });
-    } catch (err) {
-      // this.setState({error: `${err.message}: ${err.response.data.error}`});
-      console.log('epdhkv;soflidgkh');
-    }
+  // handle closing and showing modal
+  hideModal = () => {
+    this.setState({modalSeen: false});
+  }
+  showModal = () => {
+    this.setState({modalSeen: true});
   }
 
+  //get books for given user email
+  componentDidMount = async () => {
+    try {
+      const userBookData = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/books`, { params: { email: this.props.auth0.user.email } });
+      this.setState({
+        bookData: userBookData.data.books
+      })
+    } catch (error) {
+      this.setState({
+        error: true,
+        errorMessage: error.message,
+      })
+    }
+  };
 
-
-
+  updateBooks = (bookResults) => {
+    this.setState ({
+      bookData:bookResults,
+    })
+    console.log('this is the updated state of books after POST:', this.state.books);
+  }
+  
   render() {
-    console.log(`hiiiiiiii, ${this.state.userBooks}`);
     return (
       <>
-        <Container style={{ width: '70%' }}>
-          <Carousel style={{ width: '30%' }}>
-            {this.state.userBooks && this.state.userBooks.map(book =>
-              <Carousel.Item>
+        {this.state.bookData.length > 0 &&
+          <Carousel>
+            {this.state.bookData.map((book, index) =>
+              <Carousel.Item key={index}>
                 <img
-                  className="d-block w-100"
                   src={book.image}
-                  alt={`slide`}
+                  alt="pleasant placeholder pictures"
                 />
-                <h3>{book.name}</h3>
-                <p>{book.description}</p>
+                <Carousel.Caption>
+                  <h3>{book.name}</h3>
+                  <p>{book.description}</p>
+                  <p>{book.status}</p>
+                </Carousel.Caption>
               </Carousel.Item>
             )}
           </Carousel>
-        </Container>
+        }
+        <Button variant='dark' onClick={this.showModal}>Add Your Book</Button>
+        <BookFormModal modalSeen={this.state.modalSeen} show={this.showModal} close={this.hideModal} updateBooks={this.updateBooks}/>
       </>
     )
   }
 }
 
-export default withAuth0(BestBooks);
+
+export default withAuth0(BestBook)
