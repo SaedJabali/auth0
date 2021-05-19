@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
 import Carousel from 'react-bootstrap/Carousel';
-import Button from 'react-bootstrap/Button';
+// import Button from 'react-bootstrap/Button';
 import BookFormModal from './BestBookModal';
 
 class BestBook extends React.Component {
@@ -10,30 +10,28 @@ class BestBook extends React.Component {
     super(props)
     this.state = { 
       bookData: [],
-      modalSeen: false,
+      // modalSeen: false,
     };
   }
 
   // handle closing and showing modal
-  hideModal = () => {
-    this.setState({modalSeen: false});
-  }
-  showModal = () => {
-    this.setState({modalSeen: true});
-  }
+  // hideModal = () => {
+  //   this.setState({modalSeen: false});
+  // }
+  // showModal = () => {
+  //   this.setState({modalSeen: true});
+  // }
 
   //get books for given user email
   componentDidMount = async () => {
+    const { user } = this.props.auth0;
     try {
-      const userBookData = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/books`, { params: { email: this.props.auth0.user.email } });
+      const userBookData = await axios.get(`http://localhost:3001/books?email=${user.email}`);
       this.setState({
         bookData: userBookData.data.books
       })
     } catch (error) {
-      this.setState({
-        error: true,
-        errorMessage: error.message,
-      })
+      console.log(error);
     }
   };
 
@@ -51,10 +49,10 @@ class BestBook extends React.Component {
           <Carousel>
             {this.state.bookData.map((book, index) =>
               <Carousel.Item key={index}>
-                <img
+                {/* <img
                   src={book.image}
                   alt="pleasant placeholder pictures"
-                />
+                /> */}
                 <Carousel.Caption>
                   <h3>{book.name}</h3>
                   <p>{book.description}</p>
@@ -64,7 +62,7 @@ class BestBook extends React.Component {
             )}
           </Carousel>
         }
-        <Button variant='dark' onClick={this.showModal}>Add Your Book</Button>
+        {/* <Button variant='dark' onClick={this.showModal}>Add Your Book</Button> */}
         <BookFormModal modalSeen={this.state.modalSeen} show={this.showModal} close={this.hideModal} updateBooks={this.updateBooks}/>
       </>
     )

@@ -1,7 +1,9 @@
 import React from 'react';
 // import './MyFavoriteBooks.css';
-import BestBooks from './BestBooks';
+// import BestBooks from './BestBooks';
 import { Button, Jumbotron } from 'react-bootstrap';
+import ListGroup from 'react-bootstrap/ListGroup'
+import Card from 'react-bootstrap/Card';
 import BookFormModal from './BestBookModal';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
@@ -38,56 +40,71 @@ class MyFavoriteBooks extends React.Component {
   }
 
 
-  addBook = book => {
-    axios.post(`${process.env.REACT_APP_BACKEND_URL}/books`, book)
-      .then(res => {
-        this.setState({
-          books: res.data.books,
-          show: false
-        });
-      })
-      .catch(err => console.log(err));
-  };
+  // addBook = async (e) => {
+  //   e.preventDefault();
 
-  deleteBook = id => {
-    axios.delete(`${process.env.REACT_APP_BACKEND_URL}/books/${id}?email=${this.props.user.email}`)
-      .then(res => {
-        this.setState({
-          books: res.data,
-        });
-      })
-      .catch(err => console.log(err));
-  }
+  //   // TODO: send the request to the backend
+  //   const bodyData = {
+  //     name: this.state.name,
+  //     description: this.state.description,
+  //     status: this.state.status,
+  //     email: this.props.auth0.user.email
+  //   };
+  //   const newBook = await axios.post(`http://localhost:3001/books`, bodyData);
 
-  updateBook = book => {
-    axios.put(`${process.env.REACT_APP_BACKEND_URL}/books/${this.state.id}`, book)
-      .then(res => {
-        this.setState({
-          books: res.data,
-          show: false
-        }) 
-      })
-  }
+  //   // TODO: get the new data and update it in the state
+  //   this.setState({
+  //     books: newBook.data
+  //   });
+  //   console.log('hiahxfoispydghfoinsdhgvj[pfis' ,this.state.books);
+  // }
 
-  handleUpdate = book => {
-    this.setState({
-      show: true,
-      name: book.name,
-      description: book.description,
-      status: book.status,
-      photo: book.photo,
-      id: book._id,
-      isUpdating: true
+  updateName = (e) => this.setState({ name: e.target.value });
+  updateDescription = (e) => this.setState({ description: e.target.value });
+  updateStatus = (e) => this.setState({ status: e.target.value });
+
+  deleteBook = async (index) => {
+    const { user } = this.props.auth0;
+    const newArrayOfBooks = this.state.books.filter((book, idx) => {
+      return idx !== index;
     });
-  }
 
-  handleShow = () => {
-    this.setState({ show: true });
-  }
+    console.log(newArrayOfBooks);
+    this.setState({
+      books: newArrayOfBooks
+    });
 
-  handleClose = () => {
-    this.setState({ show: false });
+    await axios.delete(`${process.env.REACT_APP_HOST}/books/${index}?email=${user.email}`);
   }
+  // updateBook = (book => {
+  //   .then(res => {
+  //     this.setState({
+  //       books: res.data,
+  //       show: false
+  //     })
+  //   })
+  //   axios.put(`${process.env.REACT_APP_BACKEND_URL}/books/${this.state.id}`, book)
+  // });
+
+  // handleUpdate = (book => {
+  //   this.setState({
+  //     show: true,
+  //     name: book.name,
+  //     description: book.description,
+  //     status: book.status,
+  //     photo: book.photo,
+  //     id: book._id,
+  //     isUpdating: true
+  //   });
+  // });
+
+  // handleShow = () => {
+  //   this.setState({ show: true });
+  // }
+
+  // handleClose = () => {
+  //   this.setState({ show: false });
+  // }
 
   handleOnchange = e => {
     this.setState({
@@ -95,67 +112,65 @@ class MyFavoriteBooks extends React.Component {
     });
   }
 
-  handleSubmit = e => {
-    e.preventDefault();
-    if (this.state.isUpdating) {
-      // Update
-      const book = {
-        email: this.props.user.email,
-        books: [
-          {
-            name: this.state.name,
-            description: this.state.description,
-            status: this.state.status,
-            photo: this.state.photo
-          }
-        ]
-      }
-      this.updateBook(book);
-    } else {
-      // Add
-      const book = {
-        email: this.props.user.email,
-        books: [
-          {
-            name: this.state.name,
-            description: this.state.description,
-            status: this.state.status,
-            photo: this.state.photo
-          }
-        ]
-      }
-      this.addBook(book);
-    }
-  }
+  // handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (this.state.isUpdating) {
+  //     // Update
+  //     const book = {
+  //       email: this.props.user.email,
+  //       books: [
+  //         {
+  //           name: this.state.name,
+  //           description: this.state.description,
+  //           status: this.state.status,
+  //           // photo: this.state.photo
+  //         }
+  //       ]
+  //     }
+  //     this.updateBook(book);
+  //   } else {
+  //     // Add
+  //     const book = {
+  //       email: this.props.user.email,
+  //       books: [
+  //         {
+  //           name: this.state.name,
+  //           description: this.state.description,
+  //           status: this.state.status,
+  //           // photo: this.state.photo
+  //         }
+  //       ]
+  //     }
+  //     this.addBook(book);
+  //   }
+  // }
 
 
   render() {
     return (
       <>
-        <Jumbotron>
-          <h1>My Favorite Books</h1>
-          <p>
-            This is a collection of my favorite books
-          </p>
-          <Button onClick={this.handleShow} >Add Book</Button>
-          <BookFormModal
-            show={this.state.show}
-            handleClose={this.handleClose}
-            handleShow={this.handleShow}
-            name={this.state.name}
-            descriptions={this.state.description}
-            status={this.state.status}
-            photo={this.state.photo}
-            handleOnchange={this.handleOnchange}
-            handleSubmit={this.handleSubmit}
-            addBook={this.addBook}
-          />
-        </Jumbotron>
-        <BestBooks
-          handleUpdate={this.handleUpdate}
-          deleteBook={this.deleteBook}
-          books={this.state.books}
-        />
+        {this.state.books.length > 0 &&
+          <Jumbotron>
+
+            <h1>My Favorite Books</h1>
+            <p>
+              This is a collection of my favorite books
+      </p>
+            <BookFormModal addBook={this.addBook} updateName={this.updateName} updateDescription={this.updateDescription} updateStatus={this.updateStatus} handleSubmit={this.handleSubmit} />
+            {this.state.books.map((ele, idx) => {
+              return <Card style={{ width: '18rem' }} key={idx}>
+                <ListGroup variant="flush">
+                  <ListGroup.Item as="li" active>book Nam:
+              {ele.name}</ListGroup.Item>
+                  <ListGroup.Item>description: {ele.description}</ListGroup.Item>
+                  <ListGroup.Item>status: {ele.status}</ListGroup.Item>
+                </ListGroup>
+                <Button onClick={() => this.deleteBook(idx)} >remove</Button>
+              </Card>;
+            })}
+
+
+          </Jumbotron>}
       </>
     )
   }
