@@ -35,8 +35,6 @@ getListOfBooks = async() => {
   })
 
 }
-
-// handleDeletedState
   render() {
     const data = this.state.listOfBooks;
     return(
@@ -51,7 +49,7 @@ getListOfBooks = async() => {
               <Carousel.Item key={idx}>
                 <img
                   className="d-block w-100"
-                  src={'https://via.placeholder.com/200x300'}
+                  src={book.image}
                   alt={book.name}
                 />
 
