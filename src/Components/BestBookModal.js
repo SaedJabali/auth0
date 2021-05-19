@@ -9,48 +9,30 @@ class BookFormModal extends React.Component {
       name: '',
       description: '',
       status: '',
-      photo: '',
+      // photo: '',
+      books: [],
     };
   }
+  updateName = (e) => this.setState({ name: e.target.value });
+  updateDescription = (e) => this.setState({ description: e.target.value });
+  updateStatus = (e) => this.setState({ status: e.target.value });
 
-  handleOnchange = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
   addBook = async (e) => {
-    // e.preventDefault();
-    const { user } = this.props.auth0;
-    // TODO: send the request to the backend
-    const bodyData = {
-      name: user.name,
-      description: user.description,
-      status: user.status,
-      email: user.email
-    };
-    const newBook = await axios.post(`http://localhost:3001/books`, bodyData);
+    e.preventDefault();
+    const newBook = await axios.post(`http://localhost:3001/books`, {
+      name: this.state.name,
+      description: this.state.description,
+      status: this.state.status,
+      email: this.props.auth0.user.email
+    });
 
     // TODO: get the new data and update it in the state
     this.setState({
       books: newBook.data
     });
     console.log('hiahxfoispydghfoinsdhgvj[pfis', this.state.books);
-  }
-  handleSubmit = (e) => {
-    const { user } = this.props.auth0;
-    e.preventDefault();
-    const book = {
-      email: user.email,
-      books: [
-        {
-          name: user.name,
-          description: user.description,
-          status: user.status,
-          // photo: this.state.photo
-        }
-      ]
-    }
-    this.addBook(book);
+    console.log('new boooooooooks', newBook);
+
   }
 
   render() {
@@ -62,26 +44,21 @@ class BookFormModal extends React.Component {
           </Form.Group>
           <Form.Group controlId="formBasicEmail">
             <Form.Label>Name</Form.Label>
-            <Form.Control value={this.state.name} name="name" onChange={this.handleOnchange} type="text" placeholder="Enter book name" />
+            <Form.Control value={this.state.name} name="name" onChange={this.updateName} type="text" placeholder="Enter book name" />
           </Form.Group>
 
           <Form.Group controlId="formBasicText">
             <Form.Label>Description</Form.Label>
-            <Form.Control value={this.state.description} name="description" onChange={this.handleOnchange} type="text" placeholder="Enter book description" />
+            <Form.Control value={this.state.description} name="description" onChange={this.updateDescription} type="text" placeholder="Enter book description" />
           </Form.Group>
 
           <Form.Group controlId="formBasicText">
             <Form.Label>Status</Form.Label>
-            <Form.Control value={this.state.status} name="status" onChange={this.handleOnchange} type="text" placeholder="Enter read status" />
-          </Form.Group>
-
-          <Form.Group controlId="formBasicText">
-            <Form.Label>Book Cover Photo's URL</Form.Label>
-            <Form.Control value={this.state.photo} name="photo" onChange={this.handleOnchange} type="text" placeholder="Enter Book Cover Photo's URL" />
+            <Form.Control value={this.state.status} name="status" onChange={this.updateStatus} type="text" placeholder="Enter read status" />
           </Form.Group>
         </Form>
         {/* <Button variant="secondary" onClick={this.props.handleClose} >Close</Button> */}
-        <Button variant="primary" onClick={(e) => this.handleSubmit(e)} >Add Book</Button>
+        <Button variant="primary" onClick={this.addBook} >Add Book</Button>
       </Container>
     );
   }
