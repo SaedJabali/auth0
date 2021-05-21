@@ -1,90 +1,156 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import AddBook from './AddBook.js'
-import Container from 'react-bootstrap/Container'
-import Carousel from 'react-bootstrap/Carousel'
 import './MyFavoriteBooks.css';
-import { withAuth0 } from '@auth0/auth0-react';
+import BestBooks from './BestBooks';
+import { Button, Jumbotron } from 'react-bootstrap';
+import BookFormModal from './BookFormModal';
 import axios from 'axios';
-import UpdateBook from './UpdateBook.js';
-import DeleteBook from './DeleteBook.js';
-
+import superagent from 'superagent';
 
 class MyFavoriteBooks extends React.Component {
-constructor(props){
-  super(props);
-  this.state = {
-    listOfBooks: [],
+  constructor(props) {
+    super(props);
+    this.state = {
+      books: [],
+      show: false,
+      isUpdating: false,
+      name: '',
+      description: '',
+      status: '',
+      photo: '',
+      id: '',
+    };
   }
-}
-componentDidMount(){
-  this.getListOfBooks();
-}
 
-handleUpdateState = (update) => {
-  this.setState({listOfBooks: update});
-}
+  componentDidMount() {
+    const url = `http://localhost:3005/books`
+    superagent.get(url)
+      .query({ email: this.props.userInfo.email })
+      .then(res => {
+        this.setState({ books: res.body });
+      })
+      .catch(err => console.error(err))
+  }
 
-getListOfBooks = async() => {
-  const SERVER = process.env.REACT_APP_BACK_END;
-  const books = await axios
-  .get(`${SERVER}/books`,{params: {email: this.props.auth0.user.email,}});
-  
-  this.setState({
-    listOfBooks: books.data[0].books,
-  })
+  addBook = book => {
+    axios.post(`http://localhost:3005/books`, book)
+      .then(res => {
+        this.setState({
+          books: res.data.books,
+          show: false
+        });
+      })
+      .catch(err => console.log(err));
+  };
 
-}
+  deleteBook = id => {
+    axios.delete(`http://localhost:3005/books/${id}?email=${this.props.userInfo.email}`)
+      .then(res => {
+        this.setState({
+          books: res.data,
+        });
+      })
+      .catch(err => console.log(err));
+  }
+
+  updateBook = book => {
+    axios.put(`http://localhost:3005/books/${this.state.id}`, book)
+      .then(res => {
+        this.setState({
+          books: res.data,
+          show: false
+        }) 
+      })
+  }
+
+  handleUpdate = book => {
+    this.setState({
+      show: true,
+      name: book.name,
+      description: book.description,
+      status: book.status,
+      photo: book.photo,
+      id: book._id,
+      isUpdating: true
+    });
+  }
+
+  handleShow = () => {
+    this.setState({ show: true });
+  }
+
+  handleClose = () => {
+    this.setState({ show: false });
+  }
+
+  handleOnchange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  handleSubmit = e => {
+    e.preventDefault();
+    if (this.state.isUpdating) {
+      // Update
+      const book = {
+        email: this.props.userInfo.email,
+        books: [
+          {
+            name: this.state.name,
+            description: this.state.description,
+            status: this.state.status,
+            photo: this.state.photo
+          }
+        ]
+      }
+      this.updateBook(book);
+    } else {
+      // Add
+      const book = {
+        email: this.props.userInfo.email,
+        books: [
+          {
+            name: this.state.name,
+            description: this.state.description,
+            status: this.state.status,
+            photo: this.state.photo
+          }
+        ]
+      }
+      this.addBook(book);
+    }
+  }
+
+
   render() {
-    const data = this.state.listOfBooks;
-    return(
-    <>
-      <AddBook />
-      <div>
-        {this.state.listOfBooks.length > 0?
-          <Container>  
-            <Carousel>
-            {data.map((book, idx) => (
-
-              <Carousel.Item key={idx}>
-                <img
-                  className="d-block w-100"
-                  src={book.image}
-                  alt={book.name}
-                />
-
-                <Carousel.Caption>
-                  <h3>{book.name}</h3>
-                  <p>{book.description}</p>
-                  <p>{book.status}</p>
-
-                  <UpdateBook 
-                    bookId={book._id}
-                    name={book.name}
-                    description={book.description}
-                    status={book.status}
-                    email={this.props.auth0.user.email} 
-                    updateList={this.handleUpdateState} 
-                  />
-
-                  <DeleteBook 
-                    bookId={book._id} 
-                    email={this.props.auth0.user.email} 
-                    updateList={this.handleDeletedState} 
-                    bookList={this.state.listOfBooks}
-                  />
-                </Carousel.Caption>
-
-              </Carousel.Item>
-            ))}
-            </Carousel>
-          </Container>
-            :<h2>Here we will list your favorite books</h2>
-            }
-      </div>
-    </>
+    return (
+      <>
+        <Jumbotron>
+          <h1>My Favorite Books</h1>
+          <p>
+            This is a collection of my favorite books
+          </p>
+          <Button onClick={this.handleShow} >Add Book</Button>
+          <BookFormModal
+            show={this.state.show}
+            handleClose={this.handleClose}
+            handleShow={this.handleShow}
+            name={this.state.name}
+            descriptions={this.state.description}
+            status={this.state.status}
+            photo={this.state.photo}
+            handleOnchange={this.handleOnchange}
+            handleSubmit={this.handleSubmit}
+          />
+        </Jumbotron>
+        <BestBooks
+          handleUpdate={this.handleUpdate}
+          deleteBook={this.deleteBook}
+          books={this.state.books}
+        />
+      </>
     )
   }
 }
 
-export default withAuth0(MyFavoriteBooks);
+export default MyFavoriteBooks;

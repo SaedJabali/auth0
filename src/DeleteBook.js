@@ -8,7 +8,7 @@ class DeleteBook extends React.Component {
   handleClick = (e) => {
     e.preventDefault();
     axios
-      .delete(`${process.env.REACT_APP_BACK_END}/books/${this.props.bookId}?user=${this.props.email}`)
+      .delete(`http://localhost:3005/books/books/${this.props.bookId}?user=${this.props.email}`)
       .then((response) => {
         let newBookList = this.props.bookList;
         // newBookList = newBookList.filter(x => x._id !== this.props.bookId);
